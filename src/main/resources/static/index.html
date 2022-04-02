@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Samosa Playground</title>
+    <link href="/webjars/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/main.css" rel="stylesheet">
+    <link rel="stylesheet" data-name="vs/editor/editor.main"
+          href="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/editor/editor.main.min.css"/>
+    <script src="/webjars/jquery/jquery.min.js"></script>
+    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
+    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
+    <script src="/app.js"></script>
+</head>
+<body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.33.0/min/vs/loader.min.js"></script>
+<script src="/monaco-editor-conf.js">
+</script>
+<noscript><h2 style="color: #ff0000">Seems your browser doesn't support Javascript! Websocket relies on Javascript being
+    enabled. Please enable
+    Javascript and reload this page!</h2></noscript>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark justify-content-between"
+     style="padding-left:20px; padding-right:10px; margin-bottom: 8px;">
+    <div class="d-inline-flex ml-3">
+        <a class="navbar-brand" style="padding-left: 10px" href="#">Samosa <span class="lead">Playground</span></a>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" style="margin-top:1px;" href="https://souris-dev.github.io/samosac-jvm/">Docs</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" style="margin-top:1px;" href="https://github.com/souris-dev/samosac-jvm">Samosa at GitHub</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <form class="form-inline">
+        <div class="btn-group" role="group">
+            <!--<button id="connect" class="btn btn-primary" type="submit">Connect</button>-->
+            <!--<button id="disconnect" class="btn btn-danger" type="submit" disabled="disabled">Disconnect</button>-->
+            <button id="send" class="btn btn-success my-2 my-sm-0" type="submit">
+                <svg xmlns="http://www.w3.org/2000/svg" style="height:1.5rem; width:1.5rem;" fill="white" viewBox="0 0 384 512">
+                    <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
+                    <path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z"/>
+                </svg>
+            </button>
+        </div>
+    </form>
+</nav>
+
+<div id="main-content" class="">
+    <div id="monacoContainer" style="height:59vh; border:1px solid #eeeeee; border-top: none;"></div>
+
+    <div class="container-fluid">
+        <h6 class="mt-2" style="letter-spacing: 0.4em;">OUTPUT</h6>
+        <div class="row" style="margin-top: 14px; margin-bottom: 25px;">
+            <div class="col-md-12">
+                <table id="outputs" class="mt-4 text-monospace" style="height:15vh;display:block;overflow-y:scroll;">
+                    <tbody id="output" class="text-monospace">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="input-group" style="height:full;">
+        <input type="text" id="programInput" class="form-control" placeholder="Send input to program">
+        <button id="sendInput" class="btn btn-dark" style="width:full;height:full;" type="submit">Send Input</button>
+        <button id="clearOutput" class="btn btn-warning" style="width:full;height:full;">Clear Output</button>
+    </div>
+</div>
+</body>
+</html>
