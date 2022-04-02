@@ -35,5 +35,3 @@ build/
 ### Playground source files from client requests and output class files
 playground-sources
 out
-
-.elasticbeanstalk
