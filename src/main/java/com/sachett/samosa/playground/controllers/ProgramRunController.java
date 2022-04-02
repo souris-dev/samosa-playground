@@ -110,6 +110,7 @@ public class ProgramRunController {
             try {
                 final String sourceFile = "./playground-sources/source" + sessionId + ".samo";
                 new File("./playground-sources").mkdirs();
+                new File("./out").mkdirs();
                 File file = new File(sourceFile);
                 file.createNewFile();
 
