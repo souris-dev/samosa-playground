@@ -274,6 +274,9 @@ public class ProgramRunController {
                 e.printStackTrace();
                 if (!(e instanceof InterruptedException)) {
                     controller.sendRunResponse(new RunResponse("", "Could not run!", true, true), sessionId);
+                    controller.sendProgramFinishedResponse(
+                            new FinishedResponse(true, "<b style=\"color:red\">Program has exited.</b>"), sessionId
+                    );
                 }
             }
         }
