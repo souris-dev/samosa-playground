@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.*;
+import java.util.List;
 
 @Service
 public class SaveProgramDbService {
@@ -17,7 +18,7 @@ public class SaveProgramDbService {
     @Job(name = "Save to DB", retries = 3)
     public void executeSaveContentDb(File sourceFile,
                                      File outClassFile,
-                                     String output, String error, String[] inputs,
+                                     String output, String error, List<String> inputs,
                                      String sessionId) throws Exception {
         // Read the file contents
         // We actually can avoid doing this by passing the program as the argument to this function

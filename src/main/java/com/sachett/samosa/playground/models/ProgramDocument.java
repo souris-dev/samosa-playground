@@ -2,18 +2,20 @@ package com.sachett.samosa.playground.models;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.List;
+
 @Document("programs")
 public class ProgramDocument {
 
     private String program;
     private String output;
     private String error;
-    private String[] inputs;
+    private List<String> inputs;
     private String sessionId;
 
     public ProgramDocument(String program,
                            String output, String error,
-                           String[] inputs,
+                           List<String> inputs,
                            String sessionId) {
         super();
         this.program = program;
@@ -47,11 +49,11 @@ public class ProgramDocument {
         this.error = error;
     }
 
-    public String[] getInputs() {
+    public List<String> getInputs() {
         return inputs;
     }
 
-    public void setInputs(String[] inputs) {
+    public void setInputs(List<String> inputs) {
         this.inputs = inputs;
     }
 

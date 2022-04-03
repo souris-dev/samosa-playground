@@ -304,7 +304,7 @@ public class ProgramRunController {
                         new File("./out/" + "Source" + sessionId + "Samo.class"),
                         runOutput.toString(),
                         runError.toString(),
-                        inputs.toArray(new String[0]),
+                        inputs,
                         sessionId
                 ));
             } catch (Exception e) {
