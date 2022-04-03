@@ -1,0 +1,5 @@
+server.port=<port number, 5000 for elastic beanstalk>
+org.jobrunr.background-job-server.enabled=true
+org.jobrunr.dashboard.enabled=true
+spring.data.mongodb.uri=mongodb+srv://<username>:<pwd>@<cluster>.mongodb.net/<dbname>
+spring.data.mongodb.database=<dbname>

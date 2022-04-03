@@ -3,6 +3,10 @@ package com.sachett.samosa.playground.controllers;
 import com.sachett.samosa.playground.models.FinishedResponse;
 import com.sachett.samosa.playground.models.RunRequest;
 import com.sachett.samosa.playground.models.RunResponse;
+import com.sachett.samosa.playground.services.SaveProgramDbService;
+import org.jobrunr.configuration.JobRunr;
+import org.jobrunr.jobs.Job;
+import org.jobrunr.scheduling.JobScheduler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -10,6 +14,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +30,12 @@ public class ProgramRunController {
 
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
+
+    @Autowired
+    protected JobScheduler jobScheduler;
+
+    @Autowired
+    protected SaveProgramDbService saveProgramDbService;
 
     ConcurrentHashMap<String, Thread> interactors = new ConcurrentHashMap<>();
     ConcurrentHashMap<String, ConcurrentLinkedDeque<String>> interactorQueues = new ConcurrentHashMap<>();
@@ -45,7 +56,8 @@ public class ProgramRunController {
     public RunResponse greeting(@DestinationVariable String sessionId, RunRequest message) throws Exception {
         // Run a new program:
         if (!message.getProgram().equals("") && !message.isHasInput()) {
-            ProgramRunner programRunner = new ProgramRunner(this, sessionId, message.getProgram());
+            ProgramRunner programRunner = new ProgramRunner(this, sessionId,
+                    message.getProgram(), jobScheduler, saveProgramDbService);
             Thread programRunnerThread = new Thread(programRunner);
             interactors.put(sessionId, programRunnerThread);
             interactorQueues.put(sessionId, programRunner.getMessageQ());
@@ -71,10 +83,19 @@ public class ProgramRunController {
 
         private final ConcurrentLinkedDeque<String> messageQ;
 
-        public ProgramRunner(ProgramRunController controller, String sessionId, String program) {
+        private final JobScheduler jobScheduler;
+        private final SaveProgramDbService saveProgramDbService;
+
+        public ProgramRunner(ProgramRunController controller,
+                             String sessionId,
+                             String program,
+                             JobScheduler jobScheduler,
+                             SaveProgramDbService saveProgramDbService) {
             this.controller = controller;
             this.sessionId = sessionId;
             this.theProgram = program;
+            this.jobScheduler = jobScheduler;
+            this.saveProgramDbService = saveProgramDbService;
 
             messageQ = new ConcurrentLinkedDeque<String>();
         }
@@ -113,10 +134,10 @@ public class ProgramRunController {
                 final String sourceFile = "./playground-sources/source" + sessionId + ".samo";
                 new File("./playground-sources").mkdirs();
                 new File("./out").mkdirs();
-                File file = new File(sourceFile);
-                file.createNewFile();
+                File sourceFileFile = new File(sourceFile);
+                sourceFileFile.createNewFile();
 
-                FileWriter sourceFileWriter = new FileWriter(file);
+                FileWriter sourceFileWriter = new FileWriter(sourceFileFile);
                 sourceFileWriter.write(theProgram);
                 sourceFileWriter.close();
 
@@ -165,8 +186,10 @@ public class ProgramRunController {
                 Thread runKillPollThread = new Thread(runKillPoller);
                 runKillPollThread.start();
 
+                // To maintain records:
                 StringBuilder runOutput = new StringBuilder();
                 StringBuilder runError = new StringBuilder();
+                ArrayList<String> inputs = new ArrayList<>();
 
                 InputStream runResultStream = runProcess.getInputStream();
                 OutputStream runInputStream = runProcess.getOutputStream(); // input for the process, output for us
@@ -230,6 +253,7 @@ public class ProgramRunController {
                         }
 
                         try {
+                            inputs.add(input);
                             processInputBufferedWriter.write(input);
                             processInputBufferedWriter.newLine();
                             processInputBufferedWriter.flush();
@@ -274,6 +298,15 @@ public class ProgramRunController {
                 resultErrorStreamPoll.join(1000);
                 resultInputStreamPoll.join(1000);
                 runKillPollThread.join(1000);
+
+                jobScheduler.enqueue(() -> saveProgramDbService.executeSaveContentDb(
+                        sourceFileFile,
+                        new File("./out/" + "Source" + sessionId + "Samo.class"),
+                        runOutput.toString(),
+                        runError.toString(),
+                        inputs.toArray(new String[0]),
+                        sessionId
+                ));
             } catch (Exception e) {
                 e.printStackTrace();
                 if (!(e instanceof InterruptedException)) {
