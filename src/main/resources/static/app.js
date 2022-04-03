@@ -19,7 +19,7 @@ function setConnected(isConnected) {
 function connect() {
     var socket = new SockJS('/programrun');
     stompClient = Stomp.over(socket);
-    sessionId = Math.floor(Math.random() * 10000);
+    sessionId = Math.floor(Math.random() * 1000000);
 
     stompClient.connect({}, function (frame) {
         setConnected(true);
