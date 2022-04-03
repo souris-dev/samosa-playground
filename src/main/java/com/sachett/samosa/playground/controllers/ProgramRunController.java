@@ -18,8 +18,10 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Controller
 public class ProgramRunController {
 
-    private static final String compilerExecutablePath = "./src/main/resources/binaries/samosac-1.0-SNAPSHOT-full.jar";
-    private static final BufferedReader systemInBufferedReader = new BufferedReader(new InputStreamReader(System.in));
+    // TODO: make these config vars
+    private static final String compilerExecutablePath =
+            System.getenv("ON_BEANSTALK") == null ? "./src/main/resources/binaries/samosac-1.0-SNAPSHOT-full.jar"
+                                                        : "./compiler/samosac-1.0-SNAPSHOT-full.jar";
 
     @Autowired
     SimpMessagingTemplate simpMessagingTemplate;
