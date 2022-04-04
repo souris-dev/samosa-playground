@@ -5,6 +5,11 @@ var connected = false;
 var disconnectionTimeout = null;
 var sendButtonState = 'execute'; // 'execute' or 'stop'
 
+var theme = 'light';
+
+$(window).on('load', () => window.editor.layout());
+$(window).on('resize', () => window.editor.layout());
+
 function setConnected(isConnected) {
     $("#connect").prop("disabled", isConnected);
     $("#disconnect").prop("disabled", !isConnected);
@@ -146,4 +151,16 @@ $(function () {
     });
     $( "#sendInput" ).click(function() { sendInput(); });
     $( "#clearOutput" ).click(function() { $("#output").empty(); })
+
+    // Dark/light switch:
+    $( "#darkModeBtn" ).click(function() {
+        theme = theme == 'light' ? 'dark' : 'light';
+        $("#bodyElem").toggleClass('dark');
+        monaco.editor.setTheme(theme == 'light' ? 'vs' : 'vs-dark');
+        $("#darkModeBtn").html(theme == 'light' ? 'Dark theme' : 'Light theme');
+        $("#monacoContainer").toggleClass('monacoEditorDark');
+        $("#programInput").toggleClass('bg-dark');
+        $("#programInput").toggleClass('text-white');
+        $("#programInput").toggleClass('border-0');
+    })
 });
