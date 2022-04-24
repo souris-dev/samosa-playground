@@ -100,7 +100,10 @@
 
             <div class="d-flex flex-column justify-content-between">
                 <div class="container-fluid" style="height: auto;">
-                    <h6 class="mt-2" style="letter-spacing: 0.4em;">OUTPUT</h6>
+                    <div class="d-flex flex-row align-items-center">
+                        <h6 class="mt-2" style="letter-spacing: 0.4em;">OUTPUT</h6>
+                        <button id="clearOutput" class="btn btn-outline-secondary" style="height: 1.6rem;margin-left:0.8rem;padding-top: 0px;padding-bottom: 0px; margin-top:0.4rem; margin-bottom:auto;">Clear</button>
+                    </div>
                     <div class="row" style="margin-top: auto; margin-bottom: 1.2rem;">
                         <div class="col-md-12">
                             <table id="outputs" class="mt-4 text-monospace" style="height:15vh;display:block;overflow-y:scroll;">
@@ -113,8 +116,7 @@
 
                 <div class="input-group" style="height:5.5vh;">
                     <input type="text" id="programInput" class="form-control" placeholder="Send input to program">
-                    <button id="sendInput" class="btn btn-dark" style="width:full;height:full;" type="submit">Send Input</button>
-                    <button id="clearOutput" class="btn btn-warning" style="width:full;height:full;">Clear Output</button>
+                    <button id="sendInput" class="btn btn-dark" style="border-radius:0 !important;width:full;height:full;" type="submit">Send Input</button>
                 </div>
             </div>
         </div>
