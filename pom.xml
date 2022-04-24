@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.sachett.samosa</groupId>
 	<artifactId>playground</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.1-SNAPSHOT</version>
 	<name>playground</name>
 	<description>Samosa-lang playground</description>
 	<properties>
