@@ -7,7 +7,9 @@ var sendButtonState = 'execute'; // 'execute' or 'stop'
 
 var theme = 'light';
 
-$(window).on('load', () => window.editor.layout());
+$(window).on('load', () => {
+    window.editor.layout();
+});
 $(window).on('resize', () => window.editor.layout());
 
 function setConnected(isConnected) {
