@@ -157,6 +157,7 @@ $(function () {
     // Dark/light switch:
     $( "#darkModeBtn" ).click(function() {
         theme = theme == 'light' ? 'dark' : 'light';
+        document.getElementById("docs").postMessage("theme-switch-" + theme, "https://souris-dev.github.io");
         $("#bodyElem").toggleClass('dark');
         monaco.editor.setTheme(theme == 'light' ? 'vs' : 'vs-dark');
         $("#darkModeBtn").html(theme == 'light' ? 'Dark theme' : 'Light theme');
