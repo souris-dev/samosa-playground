@@ -13,6 +13,7 @@
     <script src="/webjars/sockjs-client/sockjs.min.js"></script>
     <script src="/webjars/stomp-websocket/stomp.min.js"></script>
     <script src="/app.js"></script>
+    <script src="/examples.js"></script>
 
     <style>
         .flex-fill {
@@ -96,6 +97,19 @@
                  padding-left:0px !important;
                  padding-right:0px !important;
                  margin-right: 0px !important">
+            <select class="form-select" aria-label="Example programs" id="program-select">
+                <option value="hello" selected>Hello world</option>
+                <option value="variables">Variables</option>
+                <option value="user-inp">Taking user input</option>
+                <option value="user-out">Displaying output</option>
+                <option value="expressions">Expressions</option>
+                <option value="conditions">Conditional statements</option>
+                <option value="while">While loops</option>
+                <option value="functions">Functions</option>
+                <option value="builtins">Using some built-ins</option>
+                <option value="simple-probable">Simple probable statements</option>
+                <option value="nested-probable">Nested probable statements</option>
+            </select>
             <div id="monacoContainer" class="monacoEditor col" style="margin-right:0px !important"></div>
 
             <div class="d-flex flex-column justify-content-between">

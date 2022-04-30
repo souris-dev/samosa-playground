@@ -167,5 +167,14 @@ $(function () {
         $("#programInput").toggleClass('bg-dark');
         $("#programInput").toggleClass('text-white');
         $("#programInput").toggleClass('border-0');
+
+        $("#program-select").toggleClass('bg-dark');
+        $("#program-select").toggleClass('text-white');
+        $("#program-select").toggleClass('border-0');
     })
+
+    // Example program select:
+    $("#program-select").change(function() {
+        window.editor.setValue(examples[this.value]);
+    });
 });
