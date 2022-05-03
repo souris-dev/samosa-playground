@@ -66,14 +66,20 @@ function disconnect() {
 }
 
 function makeStopBtn() {
-    $('#send').removeClass('btn-success').addClass('btn-danger');
+    // end connecting phase
+    $('#send').html("");
+    $('#send').removeClass('btn-success').removeClass('btn-warning').addClass('btn-danger');
+
     // <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
     $('#send').html('<svg xmlns="http://www.w3.org/2000/svg" style="height:1.5rem; width:1.5rem;" fill="white" viewBox="0 0 384 512"><path d="M384 128v255.1c0 35.35-28.65 64-64 64H64c-35.35 0-64-28.65-64-64V128c0-35.35 28.65-64 64-64H320C355.3 64 384 92.65 384 128z"/></svg>')
     sendButtonState = 'stop';
 }
 
 function makeExecuteBtn() {
-    $('#send').removeClass('btn-danger').addClass('btn-success');
+    // end connecting phase:
+    $('#send').html("");
+    $('#send').removeClass('btn-danger').removeClass('btn-warning').addClass('btn-success');
+
     // <!--! Font Awesome Pro 6.1.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2022 Fonticons, Inc. -->
     $('#send').html('<svg xmlns="http://www.w3.org/2000/svg" style="height:1.5rem; width:1.5rem;" fill="white" viewBox="0 0 384 512"><path d="M361 215C375.3 223.8 384 239.3 384 256C384 272.7 375.3 288.2 361 296.1L73.03 472.1C58.21 482 39.66 482.4 24.52 473.9C9.377 465.4 0 449.4 0 432V80C0 62.64 9.377 46.63 24.52 38.13C39.66 29.64 58.21 29.99 73.03 39.04L361 215z"/></svg>')
     sendButtonState = 'execute';
@@ -81,10 +87,10 @@ function makeExecuteBtn() {
 
 function sendProgram() {
     var doSend = () => {
-        // disconnect after 180 seconds automatically
+        // disconnect after 190 seconds automatically
         disconnectionTimeout = setTimeout(() => {
              disconnect();
-         }, 3600000);
+         }, 190000);
         var programOrInputJson = sendButtonState == 'execute' ? JSON.stringify(
                                           {
                                               'program': window.editor.getValue(),
@@ -104,8 +110,14 @@ function sendProgram() {
                                       );
          console.log(programOrInputJson);
          stompClient.send("/app/run/" + sessionId, {}, programOrInputJson);
-         makeStopBtn();
+         if (sendButtonState == 'execute') {
+            makeStopBtn();
+         }
+         else {
+            makeExecuteBtn();
+         }
     };
+
     if (!connected) {
         connect();
 
@@ -149,6 +161,11 @@ $(function () {
         if (sendButtonState == 'execute') {
             $("#output").empty();
         }
+
+        // connecting phase
+        $("#send").html("<b>...</b>");
+        $('#send').removeClass('btn-success').removeClass('btn-danger').addClass("btn-warning");
+
         sendProgram();
     });
     $( "#sendInput" ).click(function() { sendInput(); });
