@@ -15,6 +15,16 @@ public class SaveProgramDbService {
     @Autowired
     ProgramRepository programRepository;
 
+    /**
+     * Saves the program to MongoDB collection and deletes the generated program and class file.
+     * @param sourceFile    The source file
+     * @param outClassFile  The generated output class file
+     * @param output        The output of the program run
+     * @param error         The error output of the program run
+     * @param inputs        The inputs given to the program
+     * @param sessionId     The session ID in which it was run
+     * @throws Exception    If file(s) could not be deleted, throw Exception.
+     */
     @Job(name = "Save to DB", retries = 3)
     public void executeSaveContentDb(File sourceFile,
                                      File outClassFile,
@@ -45,8 +55,8 @@ public class SaveProgramDbService {
         }
 
         // Delete the class file
-        if (!outClassFile.delete()) {
-            throw new Exception("Could not delete class file: " + outClassFile.getCanonicalPath());
+        if (outClassFile.exists() && !outClassFile.delete()) {
+            throw new Exception("Could not delete generated class file: " + outClassFile.getCanonicalPath());
         }
     }
 }

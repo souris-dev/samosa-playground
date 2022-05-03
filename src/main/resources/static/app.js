@@ -84,7 +84,7 @@ function sendProgram() {
         // disconnect after 180 seconds automatically
         disconnectionTimeout = setTimeout(() => {
              disconnect();
-         }, 120000);
+         }, 3600000);
         var programOrInputJson = sendButtonState == 'execute' ? JSON.stringify(
                                           {
                                               'program': window.editor.getValue(),

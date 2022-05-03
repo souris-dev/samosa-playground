@@ -14,11 +14,14 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
 import java.io.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 
 @Controller
 public class ProgramRunController {
@@ -137,24 +140,65 @@ public class ProgramRunController {
                 File sourceFileFile = new File(sourceFile);
                 sourceFileFile.createNewFile();
 
+                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+                LocalDateTime now = LocalDateTime.now();
+                System.out.println("----------------- Using file " + sourceFile); // debug
+                System.out.println("----------------- Time: " + dtf.format(now));
+
                 FileWriter sourceFileWriter = new FileWriter(sourceFileFile);
                 sourceFileWriter.write(theProgram);
                 sourceFileWriter.close();
 
-                Process compileProcess = Runtime.getRuntime().exec(new String[]{"java", "-jar", compilerExecutablePath, sourceFile});
+                Process compileProcess = new ProcessBuilder().command("java", "-jar", compilerExecutablePath, sourceFile).start();
                 InputStream compilationResultStream = compileProcess.getInputStream();
-                OutputStream compilationOutputStream = compileProcess.getOutputStream();
                 InputStream compilationErrorStream = compileProcess.getErrorStream();
 
-                boolean compileTimeout = !compileProcess.waitFor(15, TimeUnit.SECONDS);
+                StringWriter compilationResultWriter = new StringWriter();
+                StringWriter compilationErrorWriter = new StringWriter();
 
-                byte[] bCompilationResult = new byte[compilationResultStream.available()];
-                byte[] bCompilationError = new byte[compilationErrorStream.available()];
-                int readBytes = compilationResultStream.read(bCompilationResult, 0, bCompilationResult.length);
-                readBytes = compilationErrorStream.read(bCompilationError, 0, bCompilationError.length);
+                BufferedReader compilationOutReader = new BufferedReader(new InputStreamReader(compilationResultStream));
+                BufferedReader compilationErrReader = new BufferedReader(new InputStreamReader(compilationErrorStream));
 
-                String compilationResult = new String(bCompilationResult);
-                String compilationError = new String(bCompilationError);
+                Thread compilationResultOutStreamPoll = new Thread(() -> {
+                    try {
+                        int outChar;
+                        while (!Thread.interrupted()
+                                && (outChar = compilationOutReader.read()) != -1
+                                && compileProcess.isAlive()) {
+                            char outputChar = (char) outChar;
+                            compilationResultWriter.write(outputChar);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                Thread compilationErrorOutStreamPoll = new Thread(() -> {
+                    try {
+                        int outChar;
+                        while (!Thread.interrupted()
+                                && (outChar = compilationErrReader.read()) != -1
+                                && compileProcess.isAlive()) {
+                            char outputChar = (char) outChar;
+                            compilationErrorWriter.write(outputChar);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+
+                compilationResultOutStreamPoll.start();
+                compilationErrorOutStreamPoll.start();
+
+                boolean compileTimeout = !compileProcess.waitFor(350, TimeUnit.SECONDS);
+                System.out.println("Compile timeout? " + compileTimeout);
+
+                // debug
+                now = LocalDateTime.now();
+                System.out.println("------- Time: " + dtf.format(now));
+
+                String compilationResult = compilationResultWriter.toString();
+                String compilationError = compilationErrorWriter.toString();
 
                 System.out.println(compilationResult);
 
@@ -168,6 +212,17 @@ public class ProgramRunController {
                     // if compilation failed, do not run the program
                     return;
                 }
+                else if (compileTimeout) {
+                    controller.sendRunResponse(new RunResponse(compilationResult, "Compilation timed out.", true), sessionId);
+
+                    controller.sendProgramFinishedResponse(
+                            new FinishedResponse(true, "<b style=\"color:red\">Compilation failed.</b>"), sessionId
+                    );
+                    // if compilation failed, do not run the program
+                    return;
+                }
+
+                System.out.println("--------- Compilation finished successfully. "); //debug
 
                 // Compilation success.
                 // Now run it.
