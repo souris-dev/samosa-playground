@@ -227,7 +227,7 @@ public class ProgramRunController {
                 // Compilation success.
                 // Now run it.
 
-                ProcessBuilder processBuilder = new ProcessBuilder("java", "Source" + sessionId + "Samo");
+                ProcessBuilder processBuilder = new ProcessBuilder("java", "Source" + "Samo"  + sessionId);
                 processBuilder.directory(new File("./out"));
                 final Process runProcess = processBuilder.start();;
                 AtomicBoolean processExited = new AtomicBoolean(false);
@@ -356,7 +356,7 @@ public class ProgramRunController {
 
                 jobScheduler.enqueue(() -> saveProgramDbService.executeSaveContentDb(
                         sourceFileFile,
-                        new File("./out/" + "Source" + sessionId + "Samo.class"),
+                        new File("./out/" + "Source" + "Samo" + sessionId + ".class"),
                         runOutput.toString(),
                         runError.toString(),
                         inputs,

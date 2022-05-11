@@ -9,7 +9,7 @@ require(["vs/editor/editor.main"], () => {
     monaco.languages.setMonarchTokensProvider('samosa', {
       keywords: [
         'samosa', 'let', 'if', 'else', 'bro', 'true', 'yes', 'TRUE', 'True', 'false',
-        'nope', 'FALSE', 'False', 'while', 'thanku_next', 'yamete_kudasai'
+        'nope', 'FALSE', 'False', 'while', 'thanku_next', 'yamete_kudasai', 'return'
       ],
 
       typeKeywords: [
